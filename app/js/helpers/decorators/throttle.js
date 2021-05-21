@@ -1,7 +1,7 @@
 System.register([], function (exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    function throttle(milisegundos = 500) {
+    function throttle(milissegundos = 1000) {
         return function (target, propertyKey, descriptor) {
             const metodoOriginal = descriptor.value;
             let timer = 0;
@@ -9,7 +9,7 @@ System.register([], function (exports_1, context_1) {
                 if (event)
                     event.preventDefault();
                 clearInterval(timer);
-                timer = setTimeout(() => metodoOriginal.apply(this, args), milisegundos);
+                timer = setTimeout(() => metodoOriginal.apply(this, args), milissegundos);
             };
             return descriptor;
         };
