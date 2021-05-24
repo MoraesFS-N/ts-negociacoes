@@ -1,10 +1,8 @@
-// app/ts/services/NegociacaoService.ts
-
-import { NegociacaoParcial, Negociacao } from '../models/index';
+import { Negociacao, NegociacaoParcial } from '../models/index';
 
 export class NegociacaoService {
     
-    obterNegociacoes(handler: Function): Promise<Negociacao[]> {
+    obterNegociacoes(handler: HandleFunction): Promise<Negociacao[]> {
         
         return fetch('http://localhost:8080/dados')
             .then(res => handler(res))
@@ -14,4 +12,8 @@ export class NegociacaoService {
             )
     
     }
+}
+
+export interface HandleFunction{
+    (res: Response): Response;
 }

@@ -1,7 +1,8 @@
 import { NegociacoesView, MensagemView } from '../views/index';
 import { Negociacoes, Negociacao, NegociacaoParcial } from '../models/index';
 import { logarTempoDeExecucao, domInject, throttle } from '../helpers/decorators/index';
-import { NegociacaoService } from '../services/index';
+import { HandleFunction, NegociacaoService } from '../services/index';
+import { imprime } from '../helpers/index'
  
 export class NegociacaoController{
     
@@ -39,11 +40,16 @@ export class NegociacaoController{
             parseFloat(this._inputValor.val())
         );
         
+        // negociacao.paraTexto();
+        // this._negociacoes.paraTexto();
         this._negociacoes.adiciona(negociacao);
+  
+        imprime(negociacao, this._negociacoes);    
+
         this._negociacoesView.update(this._negociacoes);
         this._mensagemView.update('Negociação adicionada com sucesso');
      
-     
+            
      }
     
     private _ehDiaUtil(data: Date){
@@ -54,8 +60,7 @@ export class NegociacaoController{
     @throttle()
     importaDados() {
         
-        function isOk(res: Response) {
-            
+        const isOk: HandleFunction = (res: Response) => {
             if(res.ok) {
                 return res;
             } else {
@@ -65,13 +70,18 @@ export class NegociacaoController{
 
         this._service
             .obterNegociacoes(isOk)
-            .then(negociacoes => {
-                negociacoes.forEach(negociacao => 
-                    this._negociacoes.adiciona(negociacao));
-                this._negociacoesView.update(this._negociacoes);
-            });       
+            .then(negociacoesParaImportar => {
+
+                const negociacoesJaImportadas = this._negociacoes.paraArray();
+
+                negociacoesParaImportar
+                    .filter(negociacao => !negociacoesJaImportadas.some(jaImportada => 
+                        negociacao.ehIgual(jaImportada)))
+                            .forEach(negociacao => 
+                                this._negociacoes.adiciona(negociacao));
+                                    this._negociacoesView.update(this._negociacoes);
+            });
     }
-    
 }
 
 enum DiaDaSemana{
